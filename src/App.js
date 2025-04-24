@@ -22,7 +22,7 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [feedback, setFeedback] = useState("");
   const [correctCount, setCorrectCount] = useState(0);
-
+  const [canMove, setCanMove] = useState(true);
 
   const bgmRef = useRef(null);
 
@@ -63,7 +63,7 @@ function App() {
   // 키 & 충돌
   useEffect(() => {
     const onKey = (e) => {
-      if (screen !== "quiz" || !showGame) return;
+      if (screen !== "quiz" || !showGame || !canMove) return;
       let x = fairyX, b = bgOffset;
       if (e.key === "ArrowRight") { x+=20; b-=20; }
       else if (e.key === "ArrowLeft") { x-=20; b+=20; }
@@ -89,12 +89,13 @@ function App() {
           new Audio(eatSound).play();
           setQuizHearts(qs=> qs.map(q=> q.id===h.id?{...q,found:true}:q));
           setCurrentQuestion({ id:h.id, ...questionBank[h.id] });
+          setCanMove(false); // 🔒 이동 금지
         }
       });
     };
     window.addEventListener("keydown", onKey);
     return ()=>window.removeEventListener("keydown", onKey);
-  }, [screen, showGame, fairyX, bgOffset, isJumping, quizHearts]);
+  }, [screen, showGame, fairyX, bgOffset, isJumping, quizHearts, canMove]);
 
   // 시작
   const startGame = () => {
@@ -140,6 +141,7 @@ function App() {
 const closeModal = () => {
   setCurrentQuestion(null);
   setFeedback("");
+  setCanMove(true); // 🔓 이동 가능
   if (lives <= 0) {
     setShowGame(false);  // 게임 콘텐츠 숨기기
     setScreen("quiz");   // quiz 화면(시작 버튼)으로
