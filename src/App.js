@@ -21,6 +21,8 @@ function App() {
   const [muted, setMuted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [feedback, setFeedback] = useState("");
+  const [correctCount, setCorrectCount] = useState(0);
+
 
   const bgmRef = useRef(null);
 
@@ -115,6 +117,20 @@ function App() {
     if(!currentQuestion) return;
     if(idx===currentQuestion.answer){
       setFeedback("정답입니다! 🎉");
+      setCorrectCount(c => {
+        const next = c + 1;
+  
+        // 🎉 정답 5개 모두 맞춤!
+        if (next === Object.keys(questionBank).length) {
+          setTimeout(() => {
+            alert("🎉 모든 문제를 맞췄어요! 축하합니다!");
+            // 여기서 추가로 원하는 로직 실행 가능!
+            // 예: setScreen("congrats"), 특별한 화면 보여주기 등
+          }, 500); // 잠깐 delay를 주는 게 자연스러움
+        }
+  
+        return next;
+      });
     } else {
       setFeedback("틀렸습니다 😢");
       setLives(l=>l-1);
