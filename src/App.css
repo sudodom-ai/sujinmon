@@ -41,7 +41,16 @@ body,html {margin:0;padding:0;background:#869efd;overflow:hidden;font-family:'Ju
 
 /* 게임 콘텐츠 */
 .game-content{position:relative;height:400px;overflow:hidden;}
-.game-background{position:absolute;top:0;left:0;width:200%;height:100%;background:url('./image/ground.png') repeat-x;background-size:cover;}
+.game-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* 넓게 설정해서 스크롤 효과 줌 */
+  height: 100%;
+  background: url('./image/ground.png') repeat-x;
+  background-size: cover;
+  will-change: background-position;
+}
 
 /* 하트 아이템 */
 .heart-item{position:absolute;width:40px;animation:floatHeart 2s ease-in-out infinite;}

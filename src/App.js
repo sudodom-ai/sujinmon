@@ -25,6 +25,7 @@ function App() {
   const [canMove, setCanMove] = useState(true);
 
   const bgmRef = useRef(null);
+  const maxFairyX = 500; // 캐릭터가 이동할 수 있는 최대 X좌표
 
   const questionBank = {
     0: { text: "첫 번째 퀴즈: 사귄 날짜?", choices: ["3/7","7/15","7/16"], answer: 1 },
@@ -53,10 +54,10 @@ function App() {
     if (!showGame) return;
     setQuizHearts(
       Array.from({ length: 5 }, (_, i) => ({
-        id: i, left: 300 + i * 200, top: 250, found: false
+        id: i, left: 200 + i * 200, top: 250, found: false
       }))
     );
-    setFairyX(100); setFairyY(0); setBgOffset(0);
+    setFairyX(0); setFairyY(0); setBgOffset(0);
     setLives(3); setCurrentQuestion(null); setFeedback("");
   }, [showGame]);
 
@@ -64,15 +65,15 @@ function App() {
   useEffect(() => {
     const onKey = (e) => {
       if (screen !== "quiz" || !showGame || !canMove) return;
-      let x = fairyX, b = bgOffset;
+      let x = fairyX, b = bgOffset; 
       if (e.key === "ArrowRight") {
-        if (bgOffset > -500) { // 배경이 끝까지 이동하지 않았다면
+        if (fairyX < maxFairyX) { // 배경이 끝까지 이동하지 않았다면
           x += 10;
           b -= 10;
         } 
       }
       else if (e.key === "ArrowLeft") {
-        if (bgOffset < -100) { // 왼쪽으로 갈 공간이 있다면
+        if (bgOffset < 0) { // 왼쪽으로 갈 공간이 있다면
           x -= 10;
           b += 10;
         } 
@@ -214,8 +215,7 @@ const closeModal = () => {
               </div>
             ) : (
               <div className="game-content">
-                <img src={ground} className="game-background"
-                  style={{left:`${bgOffset}px`}}/>
+                <div className="game-background" style={{ backgroundPositionX: `${bgOffset}px` }} />
                 {quizHearts.map(h=>!h.found&&(
                   <img key={h.id} src={jujinHeart} className="heart-item"
                     style={{left:`${h.left+bgOffset}px`,top:h.top}}/>
