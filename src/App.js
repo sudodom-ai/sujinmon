@@ -65,8 +65,18 @@ function App() {
     const onKey = (e) => {
       if (screen !== "quiz" || !showGame || !canMove) return;
       let x = fairyX, b = bgOffset;
-      if (e.key === "ArrowRight") { x+=20; b-=20; }
-      else if (e.key === "ArrowLeft") { x-=20; b+=20; }
+      if (e.key === "ArrowRight") {
+        if (bgOffset > -500) { // 배경이 끝까지 이동하지 않았다면
+          x += 10;
+          b -= 10;
+        } 
+      }
+      else if (e.key === "ArrowLeft") {
+        if (bgOffset < -100) { // 왼쪽으로 갈 공간이 있다면
+          x -= 10;
+          b += 10;
+        } 
+      }
       else if (e.key === " " && !isJumping) {
         setIsJumping(true);
         let h=0;
