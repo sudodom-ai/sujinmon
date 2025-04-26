@@ -24,6 +24,7 @@ function App() {
   const [correctCount, setCorrectCount] = useState(0);
   const [canMove, setCanMove] = useState(true);
 
+
   const bgmRef = useRef(null);
   const maxFairyX = 500; // 캐릭터가 이동할 수 있는 최대 X좌표
 
@@ -33,6 +34,16 @@ function App() {
     2: { text: "세 번째: 아쿠아리움 지역?", choices: ["수원","서울","양평"], answer: 1 },
     3: { text: "네 번째: 좋아하는 데이트?", choices: ["바다","행궁동","백화점"], answer: 0 },
     4: { text: "다섯 번째: 가고싶은 여행?", choices: ["제주도","강릉","양평"], answer: 0 },
+  };
+
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [showNextPopup, setShowNextPopup] = useState(false);  // 새로운 팝업 상태 추가
+
+  const handleCongratsClose = () => {
+    setShowCongrats(false);      // 현재 축하 팝업 닫기
+    setTimeout(() => {
+      setShowNextPopup(true);    // 약간 delay 주고 새로운 팝업 띄우기
+    }, 300); 
   };
 
   // 초기화: 홈 하트 + BGM
@@ -135,9 +146,7 @@ function App() {
         // 🎉 정답 5개 모두 맞춤!
         if (next === Object.keys(questionBank).length) {
           setTimeout(() => {
-            alert("🎉 모든 문제를 맞췄어요! 축하합니다!");
-            // 여기서 추가로 원하는 로직 실행 가능!
-            // 예: setScreen("congrats"), 특별한 화면 보여주기 등
+            setShowCongrats(true); // 팝업 열기!
           }, 500); // 잠깐 delay를 주는 게 자연스러움
         }
   
@@ -162,6 +171,39 @@ const closeModal = () => {
 
   return (
     <div className="App">
+
+      {showNextPopup && (
+        <div className="popup-backdrop">
+          <div className="popup-box">
+            <h2>너에게 닿기를..❤️ 체팅방에 초대되었습니다</h2>
+            <p>채팅방으로 이동하시겠습니까?</p>
+            <button onClick={() => {
+              setShowNextPopup(false);
+              setScreen("chat");  // ✅ 여기 추가!!
+            }}>
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+
+
+      {showCongrats && (
+        <div className="popup-backdrop">
+          <div className="popup-box">
+            <h2>🎉 축하합니다!</h2>
+            <p>모든 문제를 맞췄어요!</p>
+            <button onClick={() => {
+              handleCongratsClose(false)
+            }}>
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+
       {/* 반짝이 */}
       {Array.from({length:25}).map((_,i)=>
         <div key={i} className="sparkle-heart"
@@ -259,6 +301,34 @@ const closeModal = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {screen === "chat" && (
+        <div className="quiz-screen">
+          <div className="window">
+            <div className="window-header">
+              <div className="window-title">
+                <div className="chat-screen">
+                  <h2>💬 채팅방에 오신 걸 환영합니다!</h2>
+
+                  {/* 채팅 메시지 영역 */}
+                  <div className="chat-messages">
+                    {/* 예시 메시지 */}
+                    <div className="message received">안녕! 😊</div>
+                    <div className="message sent">안녕~~ 💖</div>
+                    <div className="message received">잘 지냈어?</div>
+                  </div>
+
+                  {/* 입력창 영역 */}
+                  <div className="chat-input-area">
+                    <input type="text" placeholder="메시지를 입력하세요..." className="chat-input" />
+                    <button className="send-button">전송</button>
+                  </div>
+                </div>
+              </div> 
+            </div> 
+          </div> 
         </div>
       )}
     </div>
