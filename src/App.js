@@ -39,6 +39,11 @@ function App() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [showNextPopup, setShowNextPopup] = useState(false);  // 새로운 팝업 상태 추가
 
+  //메세지 
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState("");
+  const messagesEndRef = useRef(null); // chat-messages 끝 부분을 가리킬 ref
+
   const handleCongratsClose = () => {
     setShowCongrats(false);      // 현재 축하 팝업 닫기
     setTimeout(() => {
@@ -142,6 +147,12 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentQuestion, feedback]);
   
+  //chat-messages 끝 부분을 가리킬 함수
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]); // messages 배열이 변경될 때마다 실행
 
   // 시작
   const startGame = () => {
@@ -190,6 +201,18 @@ function App() {
       setShowGame(false);  // 게임 콘텐츠 숨기기
       setScreen("quiz");   // quiz 화면(시작 버튼)으로
     }
+  };
+
+  const sendMessage = () => {
+    if (inputText.trim() === "") return; // 빈 메시지 무시
+  
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const timeString = `${hours}:${minutes.toString().padStart(2, '0')}`; // "HH:MM" 포맷
+
+    setMessages(prev => [...prev, { text: inputText, type: "sent",time: timeString  }]);
+    setInputText(""); // 입력창 비우기
   };
 
 
@@ -333,25 +356,43 @@ function App() {
           <div className="window">
             <div className="window-header">
               <div className="window-title">
-                <div className="chat-screen">
-                  <h2>💬 채팅방에 오신 걸 환영합니다!</h2>
-
-                  {/* 채팅 메시지 영역 */}
-                  <div className="chat-messages">
-                    {/* 예시 메시지 */}
-                    <div className="message received">안녕! 😊</div>
-                    <div className="message sent">안녕~~ 💖</div>
-                    <div className="message received">잘 지냈어?</div>
-                  </div>
-
-                  {/* 입력창 영역 */}
-                  <div className="chat-input-area">
-                    <input type="text" placeholder="메시지를 입력하세요..." className="chat-input" />
-                    <button className="send-button">전송</button>
-                  </div>
-                </div>
+              💖채팅
               </div> 
-            </div> 
+            </div>  
+            <div className="game-content">
+              <div className="chat-screen">
+                <h2>💬 채팅방에 오신 걸 환영합니다!</h2>
+
+                {/* 채팅 메시지 영역 */}
+                <div className="chat-messages">
+                  {messages.map((msg, idx) => (
+                    <div key={idx} className={`message-row ${msg.type}`}>
+                      <div className={`message ${msg.type}`}>
+                        {msg.text}
+                      </div>
+                      <div className="message-time">{msg.time}</div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} /> {/* 메시지 끝 부분을 참조하는 div */}
+                </div>
+
+                {/* 입력창 영역 */}
+                <div className="chat-input-area">
+                  <input 
+                    type="text" 
+                    placeholder="메시지를 입력하세요..." 
+                    className="chat-input" 
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") sendMessage();
+                    }}
+                  />
+                  <button className="send-button" onClick={sendMessage}>전송</button>
+                </div>
+              </div>
+            </div>
+             
           </div> 
         </div>
       )}
