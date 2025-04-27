@@ -119,6 +119,30 @@ function App() {
     return ()=>window.removeEventListener("keydown", onKey);
   }, [screen, showGame, fairyX, bgOffset, isJumping, quizHearts, canMove]);
 
+  //퀴즈 모달 -> (엔터:닫기, 숫자키:번호선택)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!currentQuestion) return;
+  
+      if (!feedback) {
+        // 숫자키를 눌렀을 때 답안 선택
+        const num = parseInt(e.key, 10);
+        if (!isNaN(num) && num >= 1 && num <= currentQuestion.choices.length) {
+          handleAnswer(num - 1); // 인덱스는 0부터니까 -1
+        }
+      } else {
+        // feedback이 있으면 Enter로 모달 닫기
+        if (e.key === "Enter") {
+          closeModal();
+        }
+      }
+    };
+  
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentQuestion, feedback]);
+  
+
   // 시작
   const startGame = () => {
     new Audio(startSound).play();
@@ -127,7 +151,7 @@ function App() {
   };
 
   // 음소거
-  const toggleMute = () => {
+  const toggleMute = () => {  
     setMuted(m=>{
       const nxt=!m;
       if(nxt) bgmRef.current.pause(); else bgmRef.current.play().catch(()=>{});
@@ -158,15 +182,15 @@ function App() {
     }
   };
   // 모달 닫기
-const closeModal = () => {
-  setCurrentQuestion(null);
-  setFeedback("");
-  setCanMove(true); // 🔓 이동 가능
-  if (lives <= 0) {
-    setShowGame(false);  // 게임 콘텐츠 숨기기
-    setScreen("quiz");   // quiz 화면(시작 버튼)으로
-  }
-};
+  const closeModal = () => {
+    setCurrentQuestion(null);
+    setFeedback("");
+    setCanMove(true); // 🔓 이동 가능
+    if (lives <= 0) {
+      setShowGame(false);  // 게임 콘텐츠 숨기기
+      setScreen("quiz");   // quiz 화면(시작 버튼)으로
+    }
+  };
 
 
   return (
