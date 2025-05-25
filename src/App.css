@@ -115,22 +115,9 @@ body,html {margin:0;padding:0;background:#869efd;overflow:hidden;font-family:'Ju
 }
 
 
-.chat-screen {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #f0f0f0;
-  padding: 10px;
-}
 
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+
+
 
 .message-row {
   display: flex;
@@ -171,11 +158,79 @@ body,html {margin:0;padding:0;background:#869efd;overflow:hidden;font-family:'Ju
 }
 
 
+/* 아이폰 모양 */
+.iphone-wrapper {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #869efd;
+}
+
+
+
+.iphone-screen {
+  height: 600px;
+  width: 300px;
+  background: #8dd4f5;
+  border-radius: 40px; /* 아이폰 모서리를 둥글게 처리 */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 4px solid black;
+}
+
+
+
+/* 채팅 영역 */
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 10px;
+  margin-top: 10px; /* 상단 바와 간격을 띄우기 위해 추가 */
+  margin-bottom: 10px; /* 하단 바와 간격을 띄우기 위해 추가 */
+}
+
+
+.chat-messages {
+  flex: 1; /* 남은 공간을 다 차지하게 */
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+/* 하단 바 */
 .chat-input-area {
   display: flex;
+  align-items: center;
   padding: 10px;
-  background: #ffffff;
+  background-color: #fff;
   border-top: 1px solid #ddd;
+  position: absolute;
+  bottom: 0;
+  left: 0; /* 왼쪽 정렬을 명시적으로 지정 */
+  width: 100%;
+  box-sizing: border-box; /* 패딩 포함해서 정확히 100% 너비 계산 */
+  border-radius: 0 0 20px 20px;
+  flex-shrink: 0;
+}
+
+
+.chat-input-area input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
 }
 
 .chat-input {
@@ -196,3 +251,59 @@ body,html {margin:0;padding:0;background:#869efd;overflow:hidden;font-family:'Ju
   cursor: pointer;
 }
 
+.camera {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 14px;
+  background-color: black;
+  border-radius: 10px;
+  
+}
+
+
+.iphone-notch {
+  top: 0;
+  width: 94%;
+  height: 30px;
+  background-color: #8dd4f5(116, 206, 255);
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  font-size: 12px;
+  padding: 9px;
+  z-index: 2;
+}
+
+.notch-time {
+  flex: 1;
+  text-align: left;
+}
+
+/* 아이폰 노치 카메라 부분 */
+.camera-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 25px;
+  background-color: black;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 3;
+}
+
+.notch-icons {
+  flex: 1;
+  text-align: right;
+}
+
+.notch-icons span {
+  margin-left: 5px;
+}

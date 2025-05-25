@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useMemo } from "react";
 import "./App.css";
 import jujinHeart from "./image/pkht.png";
 import centerHeart from "./image/sujin.png";
@@ -43,7 +43,14 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef(null); // chat-messages 끝 부분을 가리킬 ref
+  const [isComposing, setIsComposing] = useState(false);
+  const handleSendMessage = () => {
+    if (inputText.trim() === "") return; // 입력값이 비어있으면 아무것도 안함
+    setMessages((prev) => [...prev, inputText]); // 기존 메시지에 추가
+    setInputText(""); // 입력창 비우기
+  };
 
+  
   const handleCongratsClose = () => {
     setShowCongrats(false);      // 현재 축하 팝업 닫기
     setTimeout(() => {
@@ -215,6 +222,14 @@ function App() {
     setInputText(""); // 입력창 비우기
   };
 
+  const sparkles = useMemo(() => {
+    return Array.from({ length: 25 }).map(() => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 5}s`,
+    }));
+  }, []); // 의존성 배열이 빈 배열이므로 최초 한 번만 실행됨
+
 
   return (
     <div className="App">
@@ -252,14 +267,14 @@ function App() {
 
 
       {/* 반짝이 */}
-      {Array.from({length:25}).map((_,i)=>
-        <div key={i} className="sparkle-heart"
-          style={{
-            top:`${Math.random()*100}%`,
-            left:`${Math.random()*100}%`,
-            animationDelay:`${Math.random()*5}s`
-          }}/>
-      )}
+      <div>
+        {/* 반짝이 렌더링 */}
+        {sparkles.map((style, i) => (
+          <div key={i} className="sparkle-heart" style={style} />
+        ))}
+
+        {/* 나머지 코드 */}
+      </div>
 
       {/* 홈 */}
       {screen==="home" && !showGame && <>
@@ -351,49 +366,69 @@ function App() {
         </div>
       )}
 
+      {/* 채팅 화면 */}
       {screen === "chat" && (
-        <div className="quiz-screen">
-          <div className="window">
-            <div className="window-header">
-              <div className="window-title">
-              💖채팅
-              </div> 
-            </div>  
-            <div className="game-content">
-              <div className="chat-screen">
-                <h2>💬 채팅방에 오신 걸 환영합니다!</h2>
+        <div className="iphone-wrapper">
+          <div className="iphone-screen">
+          <div class="iphone-notch">
+          <div class="notch-time">9:41</div>
+          <div class="camera-notch"></div>
+          <div class="notch-icons">
+            <span class="signal">📶</span>
+            <span class="wifi">📡</span>
+            <span class="battery">🔋</span>
+          </div>
+        </div>
 
-                {/* 채팅 메시지 영역 */}
-                <div className="chat-messages">
+            <div class="chat-messages">
+              {/* 채팅 메시지 영역 */}
+              <div className="chat-messages">
                   {messages.map((msg, idx) => (
                     <div key={idx} className={`message-row ${msg.type}`}>
-                      <div className={`message ${msg.type}`}>
-                        {msg.text}
-                      </div>
+                      <div className={`message ${msg.type}`}>{msg.text}</div>
                       <div className="message-time">{msg.time}</div>
                     </div>
                   ))}
-                  <div ref={messagesEndRef} /> {/* 메시지 끝 부분을 참조하는 div */}
+                  <div ref={messagesEndRef} />
                 </div>
-
-                {/* 입력창 영역 */}
-                <div className="chat-input-area">
-                  <input 
-                    type="text" 
-                    placeholder="메시지를 입력하세요..." 
-                    className="chat-input" 
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") sendMessage();
-                    }}
-                  />
-                  <button className="send-button" onClick={sendMessage}>전송</button>
-                </div>
-              </div>
             </div>
-             
-          </div> 
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();      // ⛔ 이거 없으면 새로고침되면서 중복 전송됨
+                  handleSendMessage();     // ✅ 메시지 보내는 함수
+                }}
+              >
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                />
+                <button type="submit">전송</button>
+              </form>
+
+
+            <div className="chat-input-area">
+            <input
+              type="text"
+              placeholder="메시지를 입력하세요..."
+              className="chat-input"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isComposing) {
+                  sendMessage();
+                }
+              }}
+              onCompositionStart={() => setIsComposing(true)} // 한글 조합 시작
+              onCompositionEnd={() => setIsComposing(false)} // 한글 조합 종료
+            />
+
+              <button className="send-button" onClick={sendMessage}>전송</button>
+            </div>
+
+            
+          </div>
         </div>
       )}
     </div>
